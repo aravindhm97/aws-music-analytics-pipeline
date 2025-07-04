@@ -12,7 +12,7 @@ End-to-end data pipeline demonstrating:
 - 💰 **Cost Optimization** for Free Tier
 
 ## Architecture
-![System Diagram](docs/architecture.png)
+![System Diagram](docs/ARCHITECTURE.md)
 
 ## Key Features
 - Generates realistic music streaming data

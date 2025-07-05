@@ -26,5 +26,5 @@ End-to-end data pipeline demonstrating:
    git clone https://github.com/<your-username>/aws-music-analytics-pipeline.git
    ```
 
-# Follow full deployment guide:
-![System Diagram](docs/DEPLOYMENT_GUIDE.md)
+### Follow full deployment guide:
+![Deploy Guide](docs/DEPLOYMENT_GUIDE.md)

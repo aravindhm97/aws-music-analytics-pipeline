@@ -21,9 +21,10 @@ End-to-end data pipeline demonstrating:
 - Ready for Athena analysis
 
 ## Deployment
-```bash
-# Clone repository
-git clone https://github.com/<your-username>/aws-music-analytics-pipeline.git
+   ```bash
+   # Clone repository
+   git clone https://github.com/<your-username>/aws-music-analytics-pipeline.git
+   ```
 
 # Follow full deployment guide:
-https://github.com/aravindhm97/aws-music-analytics-pipeline/tree/main/docs/DEPLOYMENT_GUIDE.md
+![System Diagram](docs/DEPLOYMENT_GUIDE.md)

@@ -10,6 +10,18 @@
    ```bash
    git clone https://github.com/<your-username>/aws-music-analytics-pipeline.git
 
+2. Package Code
+   ```bash
+   # For data generator
+   cd src/data_generator
+   pip install -r requirements.txt -t .
+   zip -r data_generator.zip .
+
+   # For cleanup
+   cd ../cleanup
+   pip install -r requirements.txt -t .
+   zip -r cleanup.zip .
+
 2. Configure AWS credentials:
    ```bash
    aws configure

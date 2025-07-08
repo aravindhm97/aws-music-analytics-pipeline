@@ -57,7 +57,7 @@ resource "aws_lambda_function" "data_generator" {
 
   depends_on = [
     aws_iam_role.lambda_generator_role,  # Ensures role exists first
-    aws_s3_bucket_object.data_generator_code
+    aws_s3_object.data_generator_code
   ]
 }
 

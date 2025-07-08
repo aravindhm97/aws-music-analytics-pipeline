@@ -2,10 +2,8 @@ import json
 import boto3
 from faker import Faker
 import datetime
-
 s3 = boto3.client('s3')
 fake = Faker()
-
 def lambda_handler(event, context):
     # Generate mock music data
     data = [{
@@ -14,13 +12,18 @@ def lambda_handler(event, context):
         "artist": fake.name(),
         "duration_ms": fake.random_int(min=90000, max=300000),
         "timestamp": datetime.datetime.utcnow().isoformat()
-    } for _ in range(50)]
+    } for _ in range(50)]  # Generate 50 records per invocation
     
     # Save to S3
+    bucket_name = "music-data-akm"  # This will be replaced by environment variable
+    key = f"raw_data/{datetime.datetime.utcnow().strftime('%Y-%m-%d-%H-%M-%S')}.json"
     s3.put_object(
-        Bucket="music-data-akm",  # Match your bucket name
-        Key=f"raw_data/{datetime.date.today()}.json",
+        Bucket=bucket_name,
+        Key=key,
         Body=json.dumps(data)
     )
     
-    return {"status": 200, "message": f"Generated {len(data)} records"}
+    return {
+        "statusCode": 200,
+        "body": json.dumps(f"Generated {len(data)} records. Saved to {bucket_name}/{key}")
+    }

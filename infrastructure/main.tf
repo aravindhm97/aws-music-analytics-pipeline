@@ -27,6 +27,19 @@ resource "aws_iam_role" "glue_execution_role" {
   })
 }
 
+# Attach basic execution policy to Lambda role
+resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
+  role       = aws_iam_role.lambda_generator_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+# Create S3 bucket object for Lambda code
+resource "aws_s3_object" "data_generator_code" {
+  bucket = aws_s3_bucket.music_data.id
+  key    = "src/data_generator.zip"
+  source = "../src/data_generator/data_generator.zip"  # Path to your ZIP file
+}
+
 # 1. S3 Data Lake
 resource "aws_s3_bucket" "music_data" {
   bucket = "music-data-${var.your_initials}" # e.g., music-data-akm
@@ -41,6 +54,7 @@ resource "aws_lambda_function" "data_generator" {
   timeout       = 10
   s3_bucket     = aws_s3_bucket.music_data.id
   s3_key        = "src/data_generator.zip"
+
   depends_on = [
     aws_iam_role.lambda_generator_role,  # Ensures role exists first
     aws_s3_bucket_object.data_generator_code
@@ -50,9 +64,12 @@ resource "aws_lambda_function" "data_generator" {
 # 3. Glue ETL Job
 resource "aws_glue_job" "music_etl" {
   name     = "music-etl-${var.your_initials}"
-  role_arn = aws_iam_role.glue_execution_role.arn  # <-- CRITICAL MISSING LINE
+  role_arn = aws_iam_role.glue_execution_role.arn
+  glue_version = "3.0"
+
   command {
     script_location = "s3://${aws_s3_bucket.music_data.id}/src/glue_etl.py"
+    python_version  = "3"
   }
 }
 

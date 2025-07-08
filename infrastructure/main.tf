@@ -16,6 +16,10 @@ resource "aws_lambda_function" "data_generator" {
   timeout       = 10
   s3_bucket     = aws_s3_bucket.music_data.id
   s3_key        = "src/data_generator.zip"
+  depends_on = [
+    aws_iam_role.lambda_generator_role,  # Ensures role exists first
+    aws_s3_bucket_object.data_generator_code
+  ]
 }
 
 # 3. Glue ETL Job

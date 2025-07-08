@@ -2,6 +2,31 @@ provider "aws" {
   region = "ap-south-1" # Free tier supported region
 }
 
+# IAM ROLES (MUST EXIST BEFORE LAMBDA/GLUE)
+resource "aws_iam_role" "lambda_generator_role" {
+  name = "lambda-role-${var.your_initials}"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = { Service = "lambda.amazonaws.com" }
+    }]
+  })
+}
+
+resource "aws_iam_role" "glue_execution_role" {
+  name = "glue-role-${var.your_initials}"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = { Service = "glue.amazonaws.com" }
+    }]
+  })
+}
+
 # 1. S3 Data Lake
 resource "aws_s3_bucket" "music_data" {
   bucket = "music-data-${var.your_initials}" # e.g., music-data-akm

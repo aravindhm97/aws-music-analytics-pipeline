@@ -23,9 +23,6 @@
    # Review changes
    terraform plan
 
-   # Apply and create AWS infra
-   terraform apply
-
 4. Deploy infrastructure:
    ```bash
    terraform apply -var="your_initials=<your-initials>"

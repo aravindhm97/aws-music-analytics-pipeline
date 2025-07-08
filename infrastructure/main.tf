@@ -87,7 +87,7 @@ resource "aws_sfn_state_machine" "pipeline" {
     "RunETL": {
       "Type": "Task",
       "Resource": "arn:aws:states:::glue:startJobRun",
-      "Parameters": {"JobName": "${aws_glue_job.etl_job.name}"},
+      "Parameters": {"JobName": "${aws_glue_job.music_etl.name}"},
       "End": true
     }
   }

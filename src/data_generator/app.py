@@ -1,29 +1,21 @@
-import json
-import boto3
+import boto3, json
 from faker import Faker
-import datetime
-s3 = boto3.client('s3')
-fake = Faker()
+
 def lambda_handler(event, context):
-    # Generate mock music data
-    data = [{
+    fake = Faker()
+    # Generate 50 mock music records
+    data = [{ 
         "user_id": fake.uuid4(),
         "song_id": fake.random_int(min=1000, max=9999),
         "artist": fake.name(),
         "duration_ms": fake.random_int(min=90000, max=300000),
-        "timestamp": datetime.datetime.utcnow().isoformat()
-    } for _ in range(50)]  # Generate 50 records per invocation
+        "timestamp": fake.iso8601()
+    } for _ in range(50)]
     
     # Save to S3
-    bucket_name = "music-data-akm"  # This will be replaced by environment variable
-    key = f"raw_data/{datetime.datetime.utcnow().strftime('%Y-%m-%d-%H-%M-%S')}.json"
+    s3 = boto3.client('s3')
     s3.put_object(
-        Bucket=bucket_name,
-        Key=key,
+        Bucket="music-data-YOUR_INITIALS",  # From Terraform
+        Key=f"raw_data/{fake.date()}.json",
         Body=json.dumps(data)
     )
-    
-    return {
-        "statusCode": 200,
-        "body": json.dumps(f"Generated {len(data)} records. Saved to {bucket_name}/{key}")
-    }

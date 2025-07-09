@@ -54,10 +54,38 @@ resource "aws_iam_role" "step_functions_role" {
   })
 }
 
+resource "aws_iam_policy" "step_functions_execution" {
+  name        = "StepFunctionsExecution-${var.your_initials}"
+  description = "Permissions for Step Functions to trigger pipeline"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = [
+          "glue:StartJobRun",
+          "glue:GetJobRun",
+          "lambda:InvokeFunction"  # ADD THIS PERMISSION
+        ]
+        Resource = [
+          aws_glue_job.music_etl.arn,
+          aws_lambda_function.data_generator.arn  # SPECIFIC LAMBDA ARN
+        ]
+      }
+    ]
+  })
+}
+
 # Step Functions Policy Attachment
 resource "aws_iam_role_policy_attachment" "step_functions_execution" {
   role       = aws_iam_role.step_functions_role.name
   policy_arn = "arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "step_functions_policy" {
+  role       = aws_iam_role.step_functions_role.name
+  policy_arn = aws_iam_policy.step_functions_execution.arn
 }
 
 # ========== S3 BUCKET + LAMBDA CODE ==========
@@ -87,6 +115,14 @@ resource "aws_lambda_function" "data_generator" {
     aws_iam_role.lambda_generator_role,
     aws_s3_object.data_generator_code
   ]
+}
+
+resource "aws_lambda_permission" "allow_stepfunctions" {
+  statement_id  = "AllowExecutionFromStepFunctions"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.data_generator.function_name
+  principal     = "states.amazonaws.com"
+  source_arn    = aws_sfn_state_machine.pipeline.arn
 }
 
 # ========== GLUE JOB ==========
